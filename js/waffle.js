@@ -136,6 +136,80 @@ legendBox
     .text(d => d);
 
 
+
+
+function rectMouseover(d) {
+    div.transition()
+    .duration(100)
+    .style('opacity', 1);
+
+    d3.select(this).style('fill', '#3d3');
+
+    div.html("<span style = 'font-weight: bold'>" + d.par_code + " " + d.ge14_constituency + "</span>" + "<br>" + "<span style = 'font-style: italic'>" + d.mp_name + " " + "(" + d.dec_2018_party + ")" + "</span>")
+    .style('font-family', 'Helvetica')
+
+  div.style('visibility', 'visible')
+    .style('left', (d3.event.pageX - 20) + 'px')    
+    .style('top', (d3.event.pageY - 35) + 'px')
+}
+
+function rectMouseout(d) {
+  div.transition()
+      .duration(500)
+      div.style('visibility', 'hidden')
+      var element = d3.select(this)
+      element.style('fill', campColor)
+}
+
+function rectMousemove(d) {
+    div.style("left", (d3.event.pageX - 20) + "px")    
+      .style("top", (d3.event.pageY - 65) + "px")
+}
+
+function campColor(d) {
+    let color = '';
+    if (d.dec_2018_camp === 'Harapan') {
+        color = 'rgba(237,28,36,1)';
+    } else if (d.dec_2018_camp === 'BN') {
+        color = 'rgba(0,0,128,1)';
+    } else if (d.dec_2018_camp === 'PAS') {
+        color = 'rgba(0,144,0,1)';
+    } else if (d.dec_2018_camp === 'GPS') {
+        color = 'rgba(254,223,0,1)';
+    } else if (d.dec_2018_camp === 'GBS') {
+        color = 'rgba(26,26,26,1)';
+    } else if (d.dec_2018_camp === 'Warisan') {
+        color = 'rgba(237,28,36,0.67)';
+    } else if (d.dec_2018_camp === 'Upko') {
+        color = 'rgba(237,28,36,0.33)';
+    } else {
+        color = 'rgba(230,230,230,1)';
+    }
+    console.log(`%c ${d.dec_2018_camp}`, `background: ${color}`);
+    return color;
+}
+
+function changeColor(d) {
+    console.log(d);
+    if (d === 'Harapan') {
+        return 'rgba(237,28,36,1)'
+    } else if (d === 'BN') {
+        return 'rgba(0,0,128,1)'
+    } else if (d === 'PAS') {
+        return 'rgba(0,144,0,1)'
+    } else if (d === 'GPS') {
+        return 'rgba(254,223,0,1)'
+    } else if (d === 'GBS') {
+        return 'rgba(26,26,26,1)'
+    } else if (d === 'Warisan') {
+        return 'rgba(237,28,36,0.67)'
+    } else if (d === 'Upko') {
+        return 'rgba(237,28,36,0.33)'
+    } else {
+        return 'rgba(230,230,230,1)';
+    }
+}
+
 d3.csv('data/tracker.csv')
     .then(data => {
 
@@ -250,7 +324,7 @@ d3.csv('data/tracker.csv')
             .concat(oldestPAS)
             .concat(oldestBN);
 
-        chart = svg.selectAll('.rect')
+        const chart = svg.selectAll('.rect')
             .data(latestSeat)
             .enter()
             .append('rect')
@@ -268,71 +342,9 @@ d3.csv('data/tracker.csv')
             .style('fill', (d) => {
                 return campColor(d);
             })
-            .on('mouseover', function(d){
-                div.transition()
-                .duration(100)
-                .style('opacity', 1);
-
-                d3.select(this).style('fill', '#3d3');
-
-                div.html("<span style = 'font-weight: bold'>" + d.par_code + " " + d.ge14_constituency + "</span>" + "<br>" + "<span style = 'font-style: italic'>" + d.mp_name + " " + "(" + d.dec_2018_party + ")" + "</span>")
-                .style('font-family', 'Helvetica')
-
-              div.style('visibility', 'visible')
-              .style('left', (d3.event.pageX - 20) + 'px')    
-              .style('top', (d3.event.pageY - 35) + 'px')
-            })
-              .on('mousemove', function(d){
-              div.style("left", (d3.event.pageX - 20) + "px")    
-              .style("top", (d3.event.pageY - 65) + "px")
-            })
-            .on("mouseout", function(d){
-              div.transition()
-              .duration(500)
-              div.style('visibility', 'hidden')
-              var element = d3.select(this)
-              element.style('fill', campColor)
-            })
-  
-        function changeChart(data, camp, party) {
-            chart.data(data)
-                .transition()
-                .style('fill', (d) => {
-                    return changeColor(d[camp]);
-                })
-                .on('mouseover', function(d) {
-                    div.transition()
-                        .duration(100)
-                        .style("opacity", 1)
-
-                    let element = d3.select(this);
-
-                    element.style("fill", "Black")
-                    div.html("<span style = 'font-weight: bold'>" + d.par_code + " " + d.ge14_constituency + "</span>" + "<br>" + "<span style = 'font-style: italic'>" + d.mp_name + " " + "(" + d[party] + ")" + "</span>")
-                        .style("font-family", "Helvetica")
-
-                    div.style("visibility", "visible")
-                        .style("left", (d3.event.pageX - 20) + "px")
-                        .style("top", (d3.event.pageY - 35) + "px");
-
-                    chart.on('mousemove', () => {
-                        div.style('left', (d3.event.pageX - 20))
-                            .style('top', (d3.event.pageY - 65))
-                    })
-
-                })
-                .on("mouseout", () => {
-                    div.transition()
-                        .duration(500);
-
-                    div.style("visibility", "hidden")
-                    let element = d3.select(this);
-
-                    element.style('fill', (d) => {
-                        return changeColor(d[camp]);
-                    })
-                });
-        }
+            .on('mouseover', rectMouseover)
+            .on('mousemove', rectMousemove)
+            .on('mouseout', rectMouseout)
 
         // chart.on('mouseover', (d) => {
         //     showInfo.call(this, d);
@@ -393,46 +405,6 @@ d3.csv('data/tracker.csv')
 
         // }
 
-        function campColor(d) {
-            if (d.dec_2018_camp === 'Harapan') {
-                return 'rgba(237,28,36,1)'
-            } else if (d.dec_2018_camp === 'BN') {
-                return 'rgba(0,0,128,1)'
-            } else if (d.dec_2018_camp === 'PAS') {
-                return 'rgba(0,144,0,1)'
-            } else if (d.dec_2018_camp === 'GPS') {
-                return 'rgba(254,223,0,1)'
-            } else if (d.dec_2018_camp === 'GBS') {
-                return 'rgba(26,26,26,1)'
-            } else if (d.dec_2018_camp === 'Warisan') {
-                return 'rgba(237,28,36,0.67)'
-            } else if (d.dec_2018_camp === 'Upko') {
-                return 'rgba(237,28,36,0.33)'
-            } else {
-                return 'rgba(230,230,230,1)';
-            }
-        }
-
-        function changeColor(d) {
-            console.log(d);
-            if (d === 'Harapan') {
-                return 'rgba(237,28,36,1)'
-            } else if (d === 'BN') {
-                return 'rgba(0,0,128,1)'
-            } else if (d === 'PAS') {
-                return 'rgba(0,144,0,1)'
-            } else if (d === 'GPS') {
-                return 'rgba(254,223,0,1)'
-            } else if (d === 'GBS') {
-                return 'rgba(26,26,26,1)'
-            } else if (d === 'Warisan') {
-                return 'rgba(237,28,36,0.67)'
-            } else if (d === 'Upko') {
-                return 'rgba(237,28,36,0.33)'
-            } else {
-                return 'rgba(230,230,230,1)';
-            }
-        }
 
         // document.querySelector('#latest').addEventListener('click', () => {
         //     changeChart(latestSeat, 'dec_2018_camp');
@@ -442,6 +414,8 @@ d3.csv('data/tracker.csv')
         //     changeChart(oldestSeat, 'may_2018_camp');
         //     console.log('checke2');
         // });
+        
+
         d3.select('#latest').on('click', () => {
             changeChart(latestSeat, 'dec_2018_camp', 'dec_2018_party')
         });
