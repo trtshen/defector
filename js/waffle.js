@@ -190,24 +190,26 @@ function campColor(d) {
 }
 
 function changeColor(d) {
-    console.log(d);
+    let color = '';
     if (d === 'Harapan') {
-        return 'rgba(237,28,36,1)'
+        color = 'rgba(237,28,36,1)';
     } else if (d === 'BN') {
-        return 'rgba(0,0,128,1)'
+        color = 'rgba(0,0,128,1)';
     } else if (d === 'PAS') {
-        return 'rgba(0,144,0,1)'
+        color = 'rgba(0,144,0,1)';
     } else if (d === 'GPS') {
-        return 'rgba(254,223,0,1)'
+        color = 'rgba(254,223,0,1)';
     } else if (d === 'GBS') {
-        return 'rgba(26,26,26,1)'
+        color = 'rgba(26,26,26,1)';
     } else if (d === 'Warisan') {
-        return 'rgba(237,28,36,0.67)'
+        color = 'rgba(237,28,36,0.67)';
     } else if (d === 'Upko') {
-        return 'rgba(237,28,36,0.33)'
+        color = 'rgba(237,28,36,0.33)';
     } else {
-        return 'rgba(230,230,230,1)';
+        color = 'rgba(230,230,230,1)';
     }
+    console.log(`%c color`, `background: ${color};`);
+    return color;
 }
 
 d3.csv('data/tracker.csv')
@@ -414,7 +416,46 @@ d3.csv('data/tracker.csv')
         //     changeChart(oldestSeat, 'may_2018_camp');
         //     console.log('checke2');
         // });
-        
+        function changeChart(data, camp, party) {
+            chart.data(data)
+                .transition()
+                .style('fill', (d) => {
+                    return changeColor(d[camp]);
+                })
+                .on('mouseover', function(d) {
+                    div.transition()
+                        .duration(100)
+                        .style("opacity", 1)
+
+                    let element = d3.select(this);
+
+                    element.style("fill", "Black")
+                    div.html("<span style = 'font-weight: bold'>" + d.par_code + " " + d.ge14_constituency + "</span>" + "<br>" + "<span style = 'font-style: italic'>" + d.mp_name + " " + "(" + d[party] + ")" + "</span>")
+                        .style("font-family", "Helvetica")
+
+                    div.style("visibility", "visible")
+                        .style("left", (d3.event.pageX - 20) + "px")
+                        .style("top", (d3.event.pageY - 35) + "px");
+
+                    chart.on('mousemove', () => {
+                        div.style('left', (d3.event.pageX - 20))
+                            .style('top', (d3.event.pageY - 65))
+                    })
+
+                })
+                .on("mouseout", () => {
+                    div.transition()
+                        .duration(500);
+
+                    div.style("visibility", "hidden")
+                    let element = d3.select(this);
+
+                    element.style('fill', (d) => {
+                        return changeColor(d[camp]);
+                    })
+                });
+        }
+
 
         d3.select('#latest').on('click', () => {
             changeChart(latestSeat, 'dec_2018_camp', 'dec_2018_party')
